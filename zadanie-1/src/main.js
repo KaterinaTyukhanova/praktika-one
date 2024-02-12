@@ -162,9 +162,11 @@ Vue.component('product', {
        <div class="product">
          <div class="product-image">
            <img :src="image" :alt="altText"/>
+           <p><a v-bind:href="link">More products like this</a></p>
          </div>
          <div class="product-info">
            <h1>{{ title }}</h1>
+           <p>{{ description }}</p>
            <p>{{ sale }}</p>
            <p v-if="inStock">In Stock</p>
            <p v-else style="text-decoration: line-through">Out of Stock</p>
@@ -173,6 +175,9 @@ Vue.component('product', {
                 :key="variant.variantId"
                 :style="{ backgroundColor:variant.variantColor }"
                 @mouseover="updateProduct(variant.variantImage)">
+           </div>
+           <div  v-for="size in sizes">
+             <p>{{ size }}</p>
            </div>
            <button v-on:click="addToCart"
                    :disabled="!inStock"
@@ -184,10 +189,12 @@ Vue.component('product', {
     data() {
         return {
             product: "Socks",
+            description: " A pair of warm, fuzzy socks",
             brand: 'Vue Mastery',
             selectedVariant: 0,
             image: "src/assets/vmSocks-blue-onWhite.jpg",
             altText: "A pair of socks",
+            link: "https://www.amazon.com/s/ref=nb_sb_noss?url=search-alias%3Daps&field-keywords=socks",
             inStock: true,
             onSale: true,
             details: ['80% cotton', '20% polyester', 'Gender-neutral'],
@@ -205,6 +212,7 @@ Vue.component('product', {
                     variantQuantity: 0
                 }
             ],
+            sizes: ['S', 'M', 'L', 'XL', 'XXL', 'XXXL'],
             reviews: [],
         }
     },
