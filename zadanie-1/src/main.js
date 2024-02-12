@@ -1,3 +1,61 @@
+let eventBus = new Vue()
+
+Vue.component('product-tabs', {
+    props: {
+        reviews: {
+            type: Array,
+            required: false
+        },
+        shipping: {
+            required: true
+        },
+        details: {
+            type: Array,
+            required: true
+        }
+    },
+    template: `
+      <div>
+        <ul>
+         <span class="tab"
+               :class="{ activeTab: selectedTab === tab }"
+               v-for="tab in tabs"
+               @click="selectedTab = tab"
+         >{{ tab }}</span>
+        </ul>
+        
+        <div v-show="selectedTab === 'Reviews'">
+          <p v-if="!reviews.length">There are no reviews yet.</p>
+          <ul>
+            <li v-for="review in reviews">
+              <p>{{ review.name }}</p>
+              <p>Rating: {{ review.rating }}</p>
+              <p>{{ review.review }}</p>
+            </li>
+          </ul>
+        </div>
+        
+        <div v-show="selectedTab === 'Make a Review'">
+          <product-review></product-review>
+        </div>
+        
+        <div v-show="selectedTab === 'Shipping'">
+          <p>{{ shipping }}</p>
+        </div>
+
+        <div v-show="selectedTab === 'Details'">
+          <product-details :details="details"></product-details>
+        </div>
+      </div>
+    `,
+    data() {
+        return {
+            tabs: ['Reviews', 'Make a Review', 'Shipping', 'Details'],
+            selectedTab: 'Reviews'
+        }
+    }
+})
+
 Vue.component('product-review', {
     template: `
       <form class="review-form" @submit.prevent="onSubmit">
@@ -64,7 +122,7 @@ Vue.component('product-review', {
                     rating: this.rating,
                     recommendation: this.recommendation
                 }
-                this.$emit('review-submitted', productReview)
+                eventBus.$emit('review-submitted', productReview)
                 this.name = null
                 this.review = null
                 this.rating = null
@@ -110,8 +168,6 @@ Vue.component('product', {
            <p>{{ sale }}</p>
            <p v-if="inStock">In Stock</p>
            <p v-else style="text-decoration: line-through">Out of Stock</p>
-           <product-details :details="details"></product-details>
-           <p>Shipping: {{ shipping }}</p>
            <div class="color-box"
                 v-for="variant in variants"
                 :key="variant.variantId"
@@ -123,19 +179,8 @@ Vue.component('product', {
                    :class="{ disabledButton: !inStock }">Add to cart</button>
            <button v-on:click="cleanToCart">Clean to cart</button>
          </div>
-         <product-review @review-submitted="addReview"></product-review>
-         <div>
-           <h2>Reviews</h2>
-           <p v-if="!reviews.length">There are no reviews yet.</p>
-           <ul>
-             <li v-for="review in reviews">
-               <p>{{ review.name }}</p>
-               <p>Rating: {{ review.rating }}</p>
-               <p>{{ review.review }}</p>
-             </li>
-           </ul>
-         </div>
- `,
+         <product-tabs :reviews="reviews" :shipping="shipping" :details="details"></product-tabs>
+    `,
     data() {
         return {
             product: "Socks",
@@ -165,16 +210,13 @@ Vue.component('product', {
     },
     methods: {
         addToCart() {
-            this.$emit('add-to-cart', this.variants[this.selectedVariant].variantId)
+            this.$emit('add-to-cart', this.variants[this.selectedVariant].variantId);
         },
         updateProduct(variantImage) {
             this.image = variantImage
         },
         cleanToCart() {
             this.$emit('clean-to-cart', this.variants[this.selectedVariant].variantId)
-        },
-        addReview(productReview) {
-            this.reviews.push(productReview)
         }
     },
     computed: {
@@ -195,10 +237,13 @@ Vue.component('product', {
                 return 2.99
             }
         }
+    },
+    created() {
+        eventBus.$on('review-submitted', productReview => {
+            this.reviews.push(productReview)
+        })
     }
 })
-
-
 
 let app = new Vue({
     el: '#app',
