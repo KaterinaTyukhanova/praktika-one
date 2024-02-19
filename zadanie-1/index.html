@@ -1,20 +1,17 @@
 <!DOCTYPE html>
 <html lang="en">
-    <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <meta http-equiv="X-UA-Compatible" content="ie=edge">
-        <script defer src="src/main.js"></script>
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/vue/1.0.18/vue.min.js"></script>
-        <link rel="stylesheet" href="src/css/main.css">
-        <title>Product App</title>
-    </head>
-    <body>
-    <div id="app">
-        <div class="cart">
-            <p>Cart({{ cart.length }})</p>
-        </div>
-        <product :premium="premium" @add-to-cart="updateCart" @clean-to-cart="deleteItem"></product>
-    </div>
-    </body>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="src/css/main.css">
+    <script src="https://cdn.jsdelivr.net/npm/vue@2.5.13/dist/vue.js"></script>
+    <script defer src="src/main.js"></script>
+    <title>Kaban</title>
+</head>
+<body>
+<div id="app">
+    <h1 class="title">Kanban доска</h1>
+    <board></board>
+</div>
+</body>
 </html>
